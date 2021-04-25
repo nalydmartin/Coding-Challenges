@@ -5,45 +5,45 @@ const foo = {
     d : undefined,
     e : 0,
     f : {
-      a : 'fuz',
-      b : null,
-      c : {
-        a : 'biz',
-        b : 'buz',
-        c : [
-          {
-            a : 'foo',
-            b : 'bar',
-            c : null,
-            d : undefined,
-            e : 0,
-            f : false
-          },
-          {
-            a : 'foo',
-            b : 'bar',
-            c : null,
-            d : undefined,
-            e : 0
-          },
-          {
-            a : 'foo',
-            b : 'bar',
-            c : null,
-            d : undefined,
-            e : 0
-          }
-        ]
-      }
+        a : 'fuz',
+        b : null,
+        c : {
+            a : 'biz',
+            b : 'buz',
+            c : [
+            {
+                a : 'foo',
+                b : 'bar',
+                c : null,
+                d : undefined,
+                e : 0,
+                f : false
+            },
+            {
+                a : 'foo',
+                b : 'bar',
+                c : null,
+                d : undefined,
+                e : 0
+            },
+            {
+                a : 'foo',
+                b : 'bar',
+                c : null,
+                d : undefined,
+                e : 0
+            }
+            ]
+        }
     }
-  };
-  
+};
+
   /** ************************************
     Your challenge is to refactor the cleanse function so its return value is a 
     clone of its received object, absent all `null` and `undefined` values.
-     - You can use Ramda.js or vanilla JavaScript to solve
-     - You may not mutate foo
-  
+        - You can use Ramda.js or vanilla JavaScript to solve
+        - You may not mutate foo
+
     Example:
     const foo = { a : 1, b : 2, c : 0, d : false, e : undefined, f : null, g : 'hello' };
     cleanse(foo); // { a : 1, b : 2, c : 0, d : false, g : 'hello' };
@@ -52,25 +52,47 @@ const foo = {
 
 const cleanse = (obj) => {
 
-  // Clone the given object and assign it to a temp variable
-    const temp = Object.assign({}, obj);
+    // Clone the given object and assign it to a temp variable
+    // const temp = Object.assign({}, obj);
+
+    // const temp = {};
+
+    // for(key in obj) {
+    //     if(obj.hasOwnProperty(key)){
+    //         temp[key] = obj[key];
+    //     }
+    // }
+
+    const temp = JSON.parse(JSON.stringify(obj));
+
+    console.log(Object.is(temp, obj))
+    console.log("THIS IS NEW TEMP", temp, temp.f.c.c)
 
     // Loop through the temp object 
     for(key in temp) {
 
-        // First check to see if the key value is an object
-        if (typeof temp[key] === "object") {
+        // Check to see if the value at each key in temp is equal to null or undefined
+        if (temp[key] === undefined || temp[key] === null) {
+            // If value is null/undefined remove the key-value pair from the object
+            delete temp[key];
+        }
+        // check to see if the key value is an object
+        else if (typeof temp[key] === "object") {
 
             // Loop in the nested object to extract key value pairs
             for(key2 in temp[key]) {
-
+                // If it's not an object check if it's null/undefined and delete it
+                if (temp[key][key2] === null || temp[key][key2] === undefined) {
+                    delete temp[key][key2];
+                }
                 //  Check to see if the nested key value is an object
-                if(typeof temp[key][key2] === "object") {
+                else if(typeof temp[key][key2] === "object") {
 
                     // Iterate through the nested object using key3
                     for(key3 in temp[key][key2]) {
                         // console.log("this is from key3: ", temp[key][key2][key3])
                         console.log(typeof temp[key][key2][key3], temp[key][key2][key3])
+
                         if (typeof temp[key][key2][key3] === "object") {
                             // Create a var to hold the arr values
                             const tempArr = temp[key][key2][key3];
@@ -82,17 +104,8 @@ const cleanse = (obj) => {
                     }
                     console.log("Inside the object!....")
                 }
-                // If it's not an object check if it's null/undefined and delete it
-                if (temp[key][key2] === null || temp[key][key2] === undefined) {
-                    delete temp[key][key2];
-                }
+                
             }
-        }
-      // Check to see if the value at each key in temp is equal to null or undefined
-      // If value is null/undefined remove the key-value pair from the object
-        if (temp[key] === undefined || temp[key] === null) {
-
-            delete temp[key];
         }
     }
     console.log("Final temp: ", temp)
